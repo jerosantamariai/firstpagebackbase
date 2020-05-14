@@ -11,11 +11,10 @@ class Users (db.Model):
     email = db.Column(db.String(100), nullable=False)
 
     def serialize(self):
-        return{
-            'id': self.id,
-            'username': self.username,
-            'password': self.password,
-            'name': self.name,
-            'lastname': self.lastname,
-            'email': self.email,
+        return {
+            "id": self.id,
+            "username": self.username,
+            "name": self.name,
+            "lastname": self.lastname,
+            "email": self.email
         }
