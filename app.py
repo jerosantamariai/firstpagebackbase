@@ -100,6 +100,31 @@ def register():
 
     return jsonify(data), 201
 
+@app.route('/changepassword', methods=['POST'])
+@jwt_required
+def changepassword():
+    if not request.is_json:
+        return jsonify({"msg": "Ingresar formato correcto"}), 400
+
+    oldpassword = request.json.get('oldpassword', None)
+    password = request.json.get('password', None)
+
+    if not oldpassword or oldpassword == '':
+        return jsonify({"msg": "Debes ingresar tu clave anterior"}), 400
+    if not password or password == '':
+        return jsonify({"msg": "Debes ingresar una nueva clave"}), 400
+
+    username = get_jwt_identity()
+
+    users = Users.query.filter_by(username=username).first()
+
+    if bcrypt.check_password_hash(users.password, oldpassword):
+        users.password = bcrypt.generate_password_hash(password)
+        db.session.commit()
+        return jsonify({"msg": "Contraseña cambiada!"}), 200
+    else:
+        return jsonify({"msg": "Ingresaste mal tu contraseña antigua!"}), 400
+
 @app.route('/users', methods=['GET', 'POST'])
 @app.route('/users/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 @jwt_required
